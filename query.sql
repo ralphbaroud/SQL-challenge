@@ -1,152 +1,157 @@
+---------------------------------------------
 --Dropping tables in case they already exist
-Drop table if exists Departments;
-Drop table if exists Department_Employees;
-Drop table if exists Department_Manager;
-Drop table if exists Employees;
-Drop table if exists Salaries;
-Drop table if exists Titles;
-
+---------------------------------------------
+drop table if exists departments;
+drop table if exists dept_emp;
+drop table if exists dept_manager;
+drop table if exists employees;
+drop table if exists salaries;
+drop table if exists titles;
+---------------------------------------------
 --Creating required tables
-Create table "Departments"
+---------------------------------------------
+create table "departments" 
 (
-	"Department_Number" varchar not null,
-	"Department_Name" varchar not null,
-constraint "PrimaryKey_Departments" primary key ("Department_Number")
+	"dept_no" varchar not null,
+	"dept_name" varchar not null,
+	constraint "PK_departments" primary key ("dept_no")
 );
 ---------------------------------------------
-Create table "Department_Employees"
+create table "dept_emp"
 (
-	"Employee_Number" int not null,
-	"Department_Number" varchar not null
+	"emp_no" int not null,
+	"dept_no" varchar not null,
+	constraint "PK_dept_emp" primary key ("emp_no","dept_no")
 );
 ---------------------------------------------
-Create table "Department_Manager"
+create table "dept_manager"
 (
-	"Department_Number" varchar not null,
-	"Employee_Number" int not null
+	"dept_no" varchar not null,
+	"emp_no" int not null,
+	constraint "PK_dept_manager" primary key ("dept_no","emp_no")
 );
 ---------------------------------------------
-Create table "Employees"
+create table "employees"
 (
-	"Employee_Number" int not null,
-	"Employee_Title" varchar not null,
-	"Birth_Date" date not null,
-	"First_Name" varchar not null,
-	"Last_Name" varchar not null,
-	"Gender" varchar not null,
-	"Hire_Date" date not null,
-	constraint "PrimaryKey_Employees" primary key ("Employee_Number")
+	"emp_no" int not null,
+	"emp_title" varchar not null,
+	"birth_date" date not null,
+	"first_name" varchar not null,
+	"last_name" varchar not null,
+	"sex" varchar not null,
+	"hire_date" date not null,
+	constraint "PK_employees" primary key ("emp_no")
 );
 ---------------------------------------------
-Create table "Salaries"
+create table "salaries"
 (
-	"Employee_Number" int not null,
-	"Salary" int not null
+	"emp_no" int not null,
+	"salary" int not null,
+	constraint "PK_salaries" primary key ("emp_no")
 );
 ---------------------------------------------
-Create table "Titles"
+create table "titles"
 (
-	"Employee_Title" varchar not null,
-	"Title" varchar not null
+	"title_id" varchar not null,
+	"title" varchar not null,
+	constraint "PK_titles" primary key ("title_id")
 );
 ---------------------------------------------
---Perform import operations and check that the data has been imported succesfully
-Select * FROM "Department_Employees"
-Select * FROM "Department_Manager"
-Select * FROM "Departments"
-Select * FROM "Employees"
-Select * FROM "Salaries"
-Select * FROM "Titles"
+--Altering Tables
 ---------------------------------------------
---Setting up relationships between the tables
----------------------------------------------
-Alter table "Department_Employees" 
-Add constraint "FK0" 
-foreign key ("Employee_Number")
-references "Employees" ("Employee_Number")
+alter table "dept_emp"
+add constraint "FK_dept_emp_emp_no" foreign key ("emp_no")
+references "employees" ("emp_no")
 ;
 ---------------------------------------------
-Alter table "Department_Employees" 
-Add constraint "FK1" 
-foreign key ("Department_Number")
-references "Departments" ("Department_Number")
+alter table "dept_emp"
+add constraint "FK_dept_emp_dept_no" foreign key ("dept_no")
+references "departments" ("dept_no")
 ;
 ---------------------------------------------
-Alter table "Department_Manager" 
-Add constraint "FK3" 
-foreign key ("Department_Number")
-references "Departments" ("Department_Number")
+alter table "dept_manager"
+add constraint "FK_dept_emp_dept_no" foreign key ("dept_no")
+references "departments" ("dept_no")
 ;
 ---------------------------------------------
-Alter table "Department_Manager" 
-Add constraint "FK4" 
-foreign key ("Employee_Number")
-references "Employees" ("Employee_Number")
+alter table "dept_manager"
+add constraint "FK_dept_manager_dept_no" foreign key ("emp_no")
+references "employees" ("emp_no")
 ;
 ---------------------------------------------
-Alter table "Salaries" 
-Add constraint "FK5" 
-foreign key ("Employee_Number")
-references "Employees" ("Employee_Number")
+alter table "employees"
+add constraint "FK_employees_emp_title" foreign key ("emp_title")
+references "titles" ("title_id")
 ;
 ---------------------------------------------
---Sorting based on README file
----------------------------------------------
-Select Employee_Number, Last_Name, First_Name, Gender, Salary
-from Employees as Employee_Number
-join Salaries as "Salary
-on Employees.Employee_Number = Salaries.Employee_Number
+alter table "salaries"
+add constraint "FK_salaries_emp_no" foreign key ("emp_no")
+references "employees" ("emp_no")
 ;
 ---------------------------------------------
-Select "First_Name", "Last_Name", "Hire_Date" From "Employees"
-where "Hire_Date" Between '1986-01-01' AND '1987-01-01'
+---Selecting all tables after performing import operations
+---------------------------------------------
+select * from departments;
+select * from dept_emp;
+select * from dept_manager;
+select * from employees;
+select * from salaries;
+select * from titles
+---------------------------------------------
+--Sorting the data based on requirements
+---------------------------------------------
+select employees.emp_no, employees.last_name, employees.first_name, employees.sex, salaries.salary
+from employees
+join salaries
+on employees.emp_no = salaries.emp_no
 ;
 ---------------------------------------------
-Select Departments.Department_Number, Departments.Department_Name,Department_Manager.Employee_Number, Employees.Last_Name,
-Employees.First_Name
-from Departments
-join Department_Manager
-on departments.Department_Number = Department_Manager.Department_Number
-Join Employees
-on Department_Manager.Employee_Number = Employees.Employee_Number
+select first_name, last_name, hire_date
+from employees
+where hire_date
+between "1986-01-01" and "1987-01-01"
 ;
 ---------------------------------------------
-Select Department_Employees.Employee_Number, Employees.Last_Name, Employees.First_Name, Departments.Department_Name
-From Department_Employees
-Join Employees
-ON Department_Employees.Employee_Number = Employees.Employee_Number
-Join Departments
-on Department_Employees.Department_Number = Departments.Department_Number
+select departments.dept_no, departments.dept_name, dept_manager.emp_no, employees.last_name, employees.first_name
+from employees
+join dept_manager
+on employees.emp_no = dept_manager.emp_no
+join departments
+on departments.dept_no = dept_manager.dept_no
 ;
----------------------------------------------
-Select First_Name, Last_Name
-from "Employees
-where First_Name = "Hercules"
-and Last_Name LIKE 'B%'
+-----------------------------------
+select employees.dept_name, employees.last_name, employees.first_name, departments.dept_name
+from employees
+join dept_emp
+on employees.emp_no = dept_emp.emp_no
+join departments
+on departments.dept_no = dept_emp.dept_no
 ;
----------------------------------------------
-select Department_Employees.Employee_Number, Employees.Last_Name, Employees.First_Name, Departments.Department_Name
-from Department_Employees
-Join Employees
-on Department_Employees.Employee_Number = Employees.Employee_Number
-join Departments
-on Department_Employees.Department_Number = Departments.Department_Number
-Where Department.Department_Name = "Sales"
+-----------------------------------
+select first_name, last_name
+from employees
+where first_name = "Hercules" and last_name like 'B%';
+-----------------------------------
+select departments.dept_name, employees.first_name, employees.last_name, dept_emp.emp_no
+from dept_emp	
+join employees
+on dept_emp.emp_no = employees.emp_no
+join departments
+on dept_emp.dept_no = departments.dept_no
+where departments.dept_name = "Sales"
 ;
----------------------------------------------
-select Department_Employees.Employee_Number, Employees.Last_Name, Employees.First_Name, Departments.Department_Name
-From Department_Employees
-Join Employees
-On Department_Employees.Employee_Number = Employees.Employee_Number
-Join Departments
-ON Department_Employees.Department_Number = Departments.Department_Number
-Where Departments.Department_Name = "Sales"
+-----------------------------------
+select departments.dept_name, employees.first_name, employees.last_name, dept_emp.emp_no
+from dept_emp
+join employees
+on dept_emp.emp_no = employees.emp_no
+join departments
+on dept_emp.dept_no = departments.dept_no
+where departments.dept_name = "Sales" or departments.dept_name = "Development"
 ;
----------------------------------------------
-Select Last_Name
-Count(Last_Name) as "Frequency"
-FROM Employees
-Group by Last_Name
-Order by Count(Last_Name) DESC
+-----------------------------------
+select last_name,
+count (last_name) from employees
+group by last_name
+order by count(last_name) desc
 ;
----------------------------------------------
